@@ -1,16 +1,22 @@
-var url = require('url');
-var request = require('request');
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
-var options = {
-  protocol: "http:",
-  host: "search.twitter.com",
-  pathname: '/search.json',
-  query: {
-    q: "codeschool"
-  }
-};
+io.sockets.on('connection', function(client) {
+  console.log("Client connected...");
 
-var searchURL = url.format(options);
-var app = require('express')( ); // Create server here
-app.get('/',function(req,res){request(searchURL).pipe(res);});
-app.listen(8080);
+  // listen for answers here
+    client.on('answer',function(question,answer){
+    client.broadcast.emit('answer',question,answer);
+  });
+
+  client.on('question', function(question) {
+    if(!client.question_asked) {
+      client.question_asked = true;
+      client.broadcast.emit('question', question);
+    }
+  });
+});
+
+server.listen(8080);
