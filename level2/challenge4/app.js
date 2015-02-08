@@ -1,11 +1,10 @@
-var http = require('http');
+var express = require('express');
+var app = express();
+app.use(express.static('public'));
 
-var server = http.createServer();
-
-server.on('request',function(request, response) {
-  response.writeHead(200);
-  response.write("Hello, this is dog");
-  response.end();
+app.get('/cities', function(req, res){
+  var cities = ['Lotopia', 'Caspiana', 'Indigo'];
+  res.send(cities);
 });
 
-server.listen(8080);
+app.listen(3001);
